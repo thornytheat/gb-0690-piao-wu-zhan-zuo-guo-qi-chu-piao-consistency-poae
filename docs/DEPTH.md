@@ -28,6 +28,7 @@
 | TRAP-14 | 同版冲突 | 覆盖或重复售卖 | 事件时间回放并保留隔离证据 | `app/modules/m2_seats/rules.py` | `tests/test_m2_seats.py::test_real_conflict` |
 | TRAP-23 | 过期端点 | 覆盖或重复售卖 | 事件时间回放并保留隔离证据 | `app/modules/m3_leases/rules.py` | `tests/test_m3_leases.py::test_expiration_endpoint_reusable` |
 | TRAP-26 | 陈旧复核 | 覆盖或重复售卖 | 事件时间回放并保留隔离证据 | `app/store.py` | `tests/test_m7_replay.py::test_stale_review` |
+| TRAP-31 | 同秒竞座 | 抢先确认认错渠道 | 竞座租约双留，按付款+票据证据裁决，未决票款搁置 | `app/modules/m3_leases/rules.py` `app/modules/m6_reconcile/rules.py` | `tests/test_m6_race.py` |
 
 ## 对账规则
 

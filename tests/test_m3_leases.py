@@ -10,16 +10,16 @@ END=instant('2026-11-18T00:00:00+08:00')
 
 def test_expiration_endpoint_reusable():
     # TRAP-23
-    x,b,l=replay([event('1','10:00'),event('2','10:15',order='P',expires='10:30')],END);assert len(l)==2 and b==[]
+    x,b,l,r=replay([event('1','10:00'),event('2','10:15',order='P',expires='10:30')],END);assert len(l)==2 and b==[] and r==[]
 
 def test_overlap_rejected():
-    x,b,l=replay([event('1','10:00'),event('2','10:10',order='P')],END);assert len(l)==1 and b[0]['code']=='OVERLAP'
+    x,b,l,r=replay([event('1','10:00'),event('2','10:10',order='P')],END);assert len(l)==1 and b[0]['code']=='OVERLAP' and r==[]
 
 def test_release_closes():
-    x,b,l=replay([event('1','10:00'),event('2','10:05','release')],END);assert l[0]['end']==instant('2026-11-17T10:05:00+08:00') and l[0]['released']
+    x,b,l,r=replay([event('1','10:00'),event('2','10:05','release')],END);assert l[0]['end']==instant('2026-11-17T10:05:00+08:00') and l[0]['released']
 
 def test_wrong_order_release():
-    x,b,l=replay([event('1','10:00'),event('2','10:05','release','P')],END);assert b[0]['code']=='STATE'
+    x,b,l,r=replay([event('1','10:00'),event('2','10:05','release','P')],END);assert b[0]['code']=='STATE' and r==[]
 
 def test_real_leases(raw):
     assert len(run(raw,stop=3,persist=False)['leases'])>=14

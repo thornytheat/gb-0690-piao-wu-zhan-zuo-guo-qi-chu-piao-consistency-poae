@@ -9,6 +9,7 @@ def view(stage):
     sample=(SAMPLES/"dirty.csv").read_text(encoding="utf-8-sig")
     data=result["stages"][stage-1]
     sold={t['seat'] for t in result['tickets']};paid={t['seat'] for t in result['payments']};held={t['seat'] for t in result['leases']}
-    seats=[{'seat':f'A-{i:02d}','state':'已出票' if f'A-{i:02d}' in sold else '待出票' if f'A-{i:02d}' in paid else '已过期' if f'A-{i:02d}' in held else '空闲'} for i in range(1,17)]
+    waiting={d['seat'] for d in result.get('disputes',[]) if d['state']=='待裁决'}
+    seats=[{'seat':f'A-{i:02d}','state':'待裁决' if f'A-{i:02d}' in waiting else '已出票' if f'A-{i:02d}' in sold else '待出票' if f'A-{i:02d}' in paid else '已过期' if f'A-{i:02d}' in held else '空闲'} for i in range(1,17)]
     return render_template(f"m{stage}.html",title=TITLE,modules=MODULES,stage=stage,result=result,data=data,
                            sample=sample,defaults=DEFAULTS,columns=COLUMNS,history=store.history(),seats=seats)

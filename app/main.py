@@ -53,6 +53,11 @@ def create_app():
             writer.writerow([result["manifest"]["run_id"],row.get("_line",""),row.get("id",row.get("event_id","")),"PASS",json.dumps(serial(row),ensure_ascii=False)])
         for row in result["quarantine"]:
             writer.writerow([result["manifest"]["run_id"],row["line"],row["key"],row["code"],json.dumps(row,ensure_ascii=False)])
+        for dispute in result.get("disputes",[]):
+            for claim in dispute["claims"]:
+                verdict=claim.get("verdict")
+                code="RACE_WIN" if verdict=="认票成交" else "RACE_LOSS" if verdict=="败方搁置" else "RACE_WAIT"
+                writer.writerow([result["manifest"]["run_id"],claim["source_line"],claim["lease"],code,json.dumps({"race":dispute["race_id"],"seat":dispute["seat"],"state":dispute["state"],"verdict":dispute["verdict"],"claim":claim},ensure_ascii=False)])
         return Response("\ufeff"+stream.getvalue(),content_type="text/csv; charset=utf-8",headers={"Content-Disposition":"attachment; filename=evidence.csv"})
     for n,name in enumerate(STAGES,1): app.register_blueprint(import_module(f"app.modules.m{n}_{name}.handler").bp)
     return app
